@@ -1,0 +1,21 @@
+# Task
+- Fonte clonada, catálogo de 291 personagens fixos: 256 comuns, 27 míticos, 8 NPCs.
+- Aprovação: gerar todos de uma vez; galeria escura simples sem template, PNG individual/folhas/ZIP.
+- FLUX Turbo Edit falhou em identidade e grade, descartado; 6 novas folhas geradas via GPT Image Flare 2k.
+- Final: extrair retratos quadrados somente das ilustrações novas, nunca dos sprites-fonte; montar folhas 10×5 e última 41.
+- Implementar galeria estática React, iniciar servidor; compilação obrigatória, sem suíte de testes.
+- Não prometer fidelidade perfeita: variações de IA são esperadas.
+- Revisão 2 aprovada: só rostos em close, mantendo pixel art, todas as folhas de uma vez.
+- 6 folhas redesenhadas via Sunburst; novos PNGs/folhas/ZIPs substituídos, manifesto versão 2 e URL de retratos com cache bust.
+- Nova coleção aprovada: 291 bustos anime pixel art da barriga para cima, 20 por folha, todas de uma vez; preservar rostos.
+- 15 gerações concluídas via Sunburst 2k. Folha 02 inicialmente bloqueada por créditos, concluída após Continue.
+- 291 PNGs 200×250 e 15 folhas 1000×1000; última com 11, distribuição esparsa normalizada. ZIP próprio e ZIPs por lote.
+- Site atualizado com alternância Bustos/Rostos, folha e downloads por coleção, bustos sem recorte CSS.
+- Drones aprovados: um por robô, 291, todas as 6 folhas em pixel art anime, nomes e efeitos sugeridos sem implementação.
+- Primeiro lote rejeitado por parecer miniaturas; segunda versão gerada com referências SOMENTE de paleta, fuselagens/rotores/sensores, sem anatomia humanoide.
+- 291 PNGs 160×160, 6 folhas 1600×800, JSON nomes/donos/papéis/efeitos e ZIP próprio. 10 arquétipos de suporte, números conceituais, não balanceados.
+- Terceira aba Drones integrada; nomes/donos nos cards, efeitos e referência do dono no modal. Rostos e bustos preservados.
+- Integração local no app gerenciado: jogo em `/`, galeria em `/galeria`, arquivo de 600 sprites em `/assets`; save anterior e PvP mantidos. O usuário dispensou GitHub.
+- Drones 241–291 regenerados em folhas menores e reenquadrados. 873 PNGs antigos receberam alfa por segmentação automática; 600 sprites novos em PNG RGBA e folhas sólidas/translúcidas. Revisão visual mostra possíveis imperfeições em alguns bustos/recortes gerados por IA.
+- Drones com construção, vínculo, melhoria e suporte limitado no combate offline/mineração; conceitos antigos da galeria não correspondem integralmente às mecânicas atuais. ZIP conjunto 1.473 PNGs em `/downloads/todos-transparentes.zip`.
+- Casa-laboratório panorâmica construída e conectada à entrada do jogo, com caminhada, câmera, estações e saída/retorno à cidade. Forja real é principal interação, respeita desbloqueio existente. Verificar preview final e build antes da entrega.
