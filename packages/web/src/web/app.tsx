@@ -5,6 +5,7 @@ import AssetLibrary from "./pages/asset-library";
 import { Provider } from "./components/provider";
 import { AgentFeedback, RunableBadge } from "@runablehq/website-runtime";
 import './gallery.css';
+import './ai-buttons.css';
 
 function App() {
   return (

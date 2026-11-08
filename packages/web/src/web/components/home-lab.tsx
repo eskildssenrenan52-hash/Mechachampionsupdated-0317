@@ -7,6 +7,7 @@ import { HERO_CLIPS, HERO_FRAME, clipFrame, heroFace, heroSheet, type HeroClip }
 import { ROBOT_MAP } from '@/game/robots';
 import { ExplorationControls } from './exploration-controls';
 import { useGate } from './gate';
+import { HomeExclusive } from './home-exclusive';
 import './home-lab.css';
 
 const WORLD=2700, GRAVITY=2600, JUMP=860, WALK=165, RUN=305;
@@ -32,10 +33,10 @@ export function HomeLab({onEnter,onExit,enabled=true}:{onEnter:(id:Exclude<Scree
  const keys=useRef({left:false,right:false,run:false,jumpHeld:false});const analog=useRef(0);
  const jumpBuf=useRef(0);const actionUntil=useRef(0);const actionClip=useRef<HeroClip>('attack');
  const specialUntil=useRef(0);const [cooldown,setCooldown]=useState(0);const [score,setScore]=useState(0);
- const collected=useRef<number[]>(CORES.map(()=>0));const [picker,setPicker]=useState(false);
+ const collected=useRef<number[]>(CORES.map(()=>0));const [picker,setPicker]=useState(false);const [exclusive,setExclusive]=useState(false);
  const [width,setWidth]=useState(480);
  const [v,setVisual]=useState<Visual>({x:825,y:0,face:1,clip:'idle',camera:585,near:'engineer',attack:false});
- const active=enabled&&!busy&&!picker;const activeRef=useRef(active);activeRef.current=active;
+ const active=enabled&&!busy&&!picker&&!exclusive;const activeRef=useRef(active);activeRef.current=active;
  const stateRef=useRef(g);stateRef.current=g;
  const enterRef=useRef(onEnter);enterRef.current=onEnter;
  const exitRef=useRef(onExit);exitRef.current=onExit;
@@ -124,7 +125,7 @@ export function HomeLab({onEnter,onExit,enabled=true}:{onEnter:(id:Exclude<Scree
   };
   raf=requestAnimationFrame(frame);return()=>cancelAnimationFrame(raf);
  },[]);
- return <section className="mc-home" ref={root} aria-label="Casa-laboratório do piloto">
+ return <section className={`mc-home home-style-${g.cityLife.homeStyle}`} ref={root} aria-label="Casa-laboratório do piloto">
   <div className="mc-home-world" style={{width:WORLD,transform:`translate3d(${-v.camera}px,0,0)`}}>
    <div className="mc-home-back"/><div className="mc-home-light a"/><div className="mc-home-light b"/>
    <div className="mc-home-floor"/><div className="mc-home-stripe"/>
@@ -137,12 +138,14 @@ export function HomeLab({onEnter,onExit,enabled=true}:{onEnter:(id:Exclude<Scree
     </button>})}
    <div className="mc-home-avatar" style={{left:v.x,transform:`translateX(-50%) translateY(${-v.y}px)`}}><div className={`mc-home-hero ${v.clip} ${v.attack?'acting':''}`}><canvas ref={canvas} width={128} height={128} style={{transform:v.face<0?'scaleX(-1)':undefined}}/>{droneLevel(g,hero)>0&&<img className="mc-home-drone" src={`/drones/${hero}_drone.png?v=3`} alt=""/>}</div><span>VOCÊ</span></div>
   </div>
-  <div className="mc-home-top"><span className="mc-home-mark">M / C</span><div><small>BASE DO PILOTO · SETOR 01</small><strong>SEU LABORATÓRIO</strong></div><span className="mc-home-pilot">NV {g.playerLevel}<br/>NÚCLEOS {score}</span></div>
+  <div className="mc-home-top"><span className="mc-home-mark">MC</span><div><small>BASE DO PILOTO · SETOR 01</small><strong>SEU LABORATÓRIO</strong></div><span className="mc-home-pilot">NV {g.playerLevel}<br/>NÚCLEOS {score}</span></div>
   <button className="mc-home-picker-trigger" onClick={()=>setPicker(true)} disabled={!enabled||busy}><img src={heroFace(hero)} alt=""/> TROCAR</button>
+  <button className="mc-home-exclusive-trigger" onClick={()=>setExclusive(true)} disabled={!enabled||busy}>NÚCLEO PRIVADO · PESQUISA</button>
   <button className="mc-home-city-link" onClick={onExit} disabled={!enabled||busy}>SAIR PARA A CIDADE ↗</button>
   <div className="mc-home-footer"><div className="mc-home-progress"><span style={{width:`${v.x/WORLD*100}%`}}/></div><div className="mc-home-help">A/D · ANDAR &nbsp; W/Z · 2× PULO &nbsp; F · ATAQUE &nbsp; Q · ESPECIAL &nbsp; E · ENTRAR <b>{close?`${nearest.label} AO ALCANCE`:'EXPLORE A CASA →'}</b></div></div>
   {close&&<button className="mc-home-near" onClick={interact} disabled={!active||nearest.id!=='exit'&&!systemUnlocked(g,nearest.id)}>{nearest.id!=='exit'&&!systemUnlocked(g,nearest.id)?`LIBERA NO NV ${UNLOCK_LEVEL[nearest.id]}`:`ENTRAR • ${nearest.label}`}</button>}
   <ExplorationControls onMove={(x)=>{analog.current=x}} onJump={doJump} onJumpEnd={()=>{keys.current.jumpHeld=false}} onAttack={attack} onSpecial={special} cooldown={cooldown} onInteract={interact} interactReady={close&&active} disabled={!active}/>
   {picker&&<div className="mc-home-picker"><h2>EXPLORAR COM</h2><p>O escolhido anda, corre, pula e ataca em casa e na cidade.</p><div>{g.robots.map(r=><button key={r.id} onClick={()=>{setExplorer(r.id);setPicker(false)}}><img src={heroFace(r.id)} alt=""/><span>{ROBOT_MAP[r.id]?.name||r.id}<small>NV {r.level}</small></span></button>)}</div><button onClick={()=>setPicker(false)}>FECHAR</button></div>}
+  {exclusive&&<HomeExclusive onClose={()=>setExclusive(false)}/>}
  </section>;
 }

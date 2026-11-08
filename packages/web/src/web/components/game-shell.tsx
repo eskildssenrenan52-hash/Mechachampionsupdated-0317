@@ -1,4 +1,5 @@
 import { PantheonScreen } from "@/screens/pantheon";
+import { StoryScreen } from "@/screens/story";
 import "@/screens/pantheon.css";
 import { ObservatoryScreen } from "@/screens/city-observatory";
 import { AcademyScreen } from "@/screens/city-academy";
@@ -8,7 +9,7 @@ import { MuseumScreen } from "@/screens/city-museum";
 import { PortalScreen } from "@/screens/city-portal";
 import { useEffect, useState } from "react";
 import { GateProvider, useGate } from "@/components/gate";
-import { HubCity } from "@/components/hub-city";
+import { HubCity } from "@/components/connected-city";
 import { HomeLab } from "@/components/home-lab";
 import { LoadingScreen, StudioSplash } from "@/components/entry-experience";
 import { SystemGuide } from "@/components/system-guide";
@@ -54,6 +55,7 @@ export function GameShell() {
       }}
     >
       <div
+        className="mc-game-viewport"
         style={{
           position: "relative",
           width: "min(100vw, 480px)",
@@ -83,7 +85,7 @@ function GameContent() {
   const { transition } = useGate();
   const close = () => transition(() => setScreen("menu"));
   const enter = (id:Screen) => { if(systemUnlocked(getState(),id))setScreen(id); };
-  const immersive = ["observatory", "academy", "contracts", "power", "museum", "portal", "modes", "ranked", "tournaments", "online", "pantheon"].includes(screen);
+  const immersive = ["observatory", "academy", "contracts", "power", "museum", "portal", "modes", "ranked", "tournaments", "online", "pantheon", "story"].includes(screen);
 
   const beginTutorial=()=>{
     const replay=g.tutorial.completed;
@@ -159,6 +161,7 @@ function GameContent() {
             {screen === "portal" && <PortalScreen onBack={close} />}
             {screen === "online" && <OnlineScreen backLabel="CIDADE" onBack={close} />}
             {screen === "pantheon" && <PantheonScreen onBack={close} />}
+            {screen === "story" && <StoryScreen onBack={close} />}
             </ScreenBoundary>
           </div>
         </div>

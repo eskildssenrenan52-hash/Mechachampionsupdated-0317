@@ -27,7 +27,8 @@ export type Screen =
   | "museum"
   | "portal"
   | "pantheon"
-  | "online";
+  | "online"
+  | "story";
 
 export function MenuScreen({ onGo }: { onGo: (s: Screen) => void }) {
   const g = useGame();

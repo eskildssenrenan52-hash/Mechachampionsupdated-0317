@@ -1,4 +1,6 @@
+import { freshStory, normalizeStory, type StoryProgress } from "./story-state";
 import { useSyncExternalStore } from "react";
+import { freshCityLife, normalizeCityLife, type CityLife } from './city-life';
 import { freshDrones, normalizeDrones, droneLevel, droneStats, type DroneState } from "./drone-system";
 import { freshTutorial, normalizeTutorial, type TutorialProgress } from "./progression";
 import { initialExpansion, normalizeExpansion, cityBonus, type ExpansionState } from "./expansion";
@@ -95,6 +97,9 @@ import {
 } from "./cards";
 
 export interface GameState extends MetaState {
+  cityLife: CityLife;
+  /** Modo História: capítulos vencidos e escolhas. */
+  story: StoryProgress;
   drones: DroneState;
   tutorial: TutorialProgress;
   expansion: ExpansionState;
@@ -156,6 +161,8 @@ const VERSION = 3;
 function initialState(): GameState {
   return {
     version: VERSION,
+    cityLife: freshCityLife(),
+    story: freshStory(),
     drones: freshDrones(),
     pantheon: initialPantheon(),
     tutorial: freshTutorial(),
@@ -271,6 +278,8 @@ function read(): GameState {
       ...base,
       ...parsed,
       version: VERSION,
+      cityLife: normalizeCityLife(parsed.cityLife),
+      story: normalizeStory(parsed.story),
       drones: normalizeDrones(parsed.drones),
       tutorial: normalizeTutorial(parsed.tutorial, parsed.robots.length),
       loadouts: parsed.loadouts ?? {},
@@ -877,7 +886,7 @@ export function miningTick(now = Date.now()): { gained: number; ms: number } {
   setState((s) => {
     const ores = { ...s.mining.ores };
     for (const [id, q] of Object.entries(res.ores)) ores[id] = (ores[id] ?? 0) + q;
-    return withMining(s, { ores, lastTick: now, totalMined: s.mining.totalMined + res.gained });
+    return withMining(s, { ores, carry:res.carry, lastTick: now, totalMined: s.mining.totalMined + res.gained });
   });
   return { gained: res.gained, ms: res.ms };
 }
@@ -926,7 +935,7 @@ export function upgradeRefinery(): boolean {
 
 export function upgradeDrill(depth: number): boolean {
   const m = state.mining;
-  if (!Number.isInteger(depth) || depth < 1 || depth > MAX_DEPTH || depth > m.depth) return false;
+  if (!Number.isInteger(depth) || depth < 1 || depth > MAX_DEPTH || depth > m.highestDepth) return false;
   const lvl = m.drills[String(depth)] ?? 0;
   if (lvl >= DRILL_MAX) return false;
   const cost = drillCost(depth, lvl);
@@ -944,9 +953,10 @@ export function upgradeDrill(depth: number): boolean {
 export function descendMine(): boolean {
   const m = state.mining;
   if (m.depth >= MAX_DEPTH) return false;
+  if(m.depth<m.highestDepth){setState(s=>withMining(s,{depth:s.mining.depth+1}));return true;}
   const next = DEPTHS[m.depth];
   if (state.gold < next.cost) return false;
-  setState((s) => withMining({ ...s, gold: s.gold - next.cost }, { depth: s.mining.depth + 1 }));
+  setState((s) => withMining({ ...s, gold: s.gold - next.cost }, { depth: s.mining.depth + 1,highestDepth:s.mining.depth+1 }));
   return true;
 }
 
@@ -975,7 +985,8 @@ export function collectRefine(now = Date.now()): number {
   setState((s) =>
     withMining(s, {
       bars: { ...s.mining.bars, [job.ore]: (s.mining.bars[job.ore] ?? 0) + job.bars },
-      job: null,
+      job: s.mining.queue[0]??null,
+      queue:s.mining.queue.slice(1),
     }),
   );
   return job.bars;
